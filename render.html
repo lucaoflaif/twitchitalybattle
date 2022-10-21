@@ -1,0 +1,53 @@
+<head>
+    <meta charset="UTF-8">
+    <script
+  src="https://code.jquery.com/jquery-3.6.1.min.js"
+  integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+  crossorigin="anonymous"></script>
+    <style>
+        body {
+        text-align:center;
+    background-color: white;}
+    </style>
+</head>
+<body>
+        <div class="text">
+            <p>Scrivi il nome della regione e questa acquisirà un punto<br>
+                Fasi di gioco:<br>
+                1) La prima regione che arriverà a 500 <br> punti verrà colorata in arancio e verrà selezionata <br>per combattere<br><br>
+                2) La seconda regione che arriverà a 500 <br>punti verrà colorata in arancio e verrà selezionata <br>per combattere con la prima<br><br>
+                3) La prima regione tra quelle in guerra (le due precedenti) <br>che arriverà a 1 000 punti allora vincerà e la regione avversaria verrà eliminata<br>(in questa fase è possibile scrivere solo i nomi delle due regioni in guerra)<br><br>
+                4) I punti si azzerano e si torna alla fase 1 finchè resterà una sola regione<br><br>
+                - tenete conto della latenza di twitch di qualche secondo<br><br>
+                - potete scrivere con maiuscole o minuscole, <br> ad esempio "liguria" o "lIguRIa" saranno entrambe valide<br><br>
+                - le regioni di più parole vanno staccate con uno spazio, <br>ad esempio "emilia romagna"
+                o "friuli venezia giulia"<br><br>
+		- il voto non è unico, potete scrivere tutte le regioni quante volte volete<br><br>
+                (per bypassare il limite dei 30 secondi potete scrivere la stessa regione con maiuscole differenti)
+            </p>
+        </div>
+        <img id='myimg' src="italyy.svg">
+        <script type="text/javascript">
+
+            const interval = setInterval(function() {
+                    d = new Date();
+                    $("#myimg").attr("src", "italyy.svg?"+d.getTime()); 
+            }, 500);
+
+            
+        </script>
+    <style>
+        body {
+            width: 1920;
+            height: 1080;
+        text-align:center;}
+        .text {
+            top: 80px;
+            left: -1100px;
+                right: 0;
+            position: absolute;
+    
+                font-size: 20px;
+        }
+    </style>
+</body>
