@@ -9,8 +9,8 @@ import aiohttp
 
 env = dotenv.dotenv_values()
 
-NUM_REGION_CHOSED_TO_FIGHT: int(env["NUM_REGION_CHOSED_TO_FIGHT"])
-NUM_VICTORY_IN_BATTLE: int(env["NUM_VICTORY_IN_BATTLE"])
+NUM_REGION_CHOSED_TO_FIGHT= int(env["NUM_REGION_CHOSED_TO_FIGHT"])
+NUM_VICTORY_IN_BATTLE= int(env["NUM_VICTORY_IN_BATTLE"])
 
 regions = ['abruzzo', 'basilicata', 'calabria', 'campania', 'emilia romagna', 'friuli venezia giulia',
 'lazio', 'liguria', 'lombardia', 'marche', 'molise', 'piemonte', 'puglia','sardegna', 'sicilia',
@@ -29,7 +29,10 @@ class Bot(commands.Bot):
         params = {'chat_id': env["TELEGRAM_USER_ID_TO_NOTIFY"], 'text': text}
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(link, params=params) as response: pass
+            try:
+                async with session.get(link, params=params) as response: pass
+            except:
+                pass
 
     #overwriting the original run function to make sure the dbase is closed right before event loop is killed
     def run(self):
@@ -60,7 +63,7 @@ class Bot(commands.Bot):
         if message.echo:
             return
 
-        self.loop.create_task(self.send_telegram_log(text='{twitch_user} sent: {message_text}'.format(twitch_user=message.author, message_text=message.content)))
+        self.loop.create_task(self.send_telegram_log(text='{twitch_user} sent: {message_text}'.format(twitch_user=message.author.name, message_text=message.content)))
 
         # Do stuff with my received message
         msg = (message.content).lower()
