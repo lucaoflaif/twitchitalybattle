@@ -9,8 +9,8 @@ import aiohttp
 
 env = dotenv.dotenv_values()
 
-NUM_REGION_CHOSED_TO_FIGHT: env["NUM_REGION_CHOSED_TO_FIGHT"]
-NUM_VICTORY_IN_BATTLE: env["NUM_VICTORY_IN_BATTLE"]
+NUM_REGION_CHOSED_TO_FIGHT: int(env["NUM_REGION_CHOSED_TO_FIGHT"])
+NUM_VICTORY_IN_BATTLE: int(env["NUM_VICTORY_IN_BATTLE"])
 
 regions = ['abruzzo', 'basilicata', 'calabria', 'campania', 'emilia romagna', 'friuli venezia giulia',
 'lazio', 'liguria', 'lombardia', 'marche', 'molise', 'piemonte', 'puglia','sardegna', 'sicilia',
