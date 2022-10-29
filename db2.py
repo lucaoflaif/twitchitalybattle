@@ -6,12 +6,12 @@ import asyncio
 import asyncpg
 
 class DBManager():
-    def __init__(self, dbase_path):
-        self.dbase_path = dbase_path
+    def __init__(self, env):
+        self.env = env
     
     async def dbase_init(self):
-        self.dbase = await asyncpg.connect(user='postgres', password='admin',
-                                 database='twitchitaliabattle', host='127.0.0.1')
+        self.dbase = await asyncpg.connect(user=self.env["DATABASE_USER"], password=self.env["DATABASE_PASSWORD"],
+                                 database=self.env["DATABASE_NAME"], host=self.env["DATABASE_HOST"])
     
     async def dbase_close(self):
         await self.dbase.close()

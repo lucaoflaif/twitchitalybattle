@@ -1,10 +1,14 @@
+from os import environ
 from twitchio.ext import commands
 import aiosqlite
 from db2 import *
 from svgmanager import *
+import dotenv
 
-NUM_REGION_CHOSED_TO_FIGHT = 500
-NUM_VICTORY_IN_BATTLE = 1000
+env = dotenv.dotenv_values()
+
+NUM_REGION_CHOSED_TO_FIGHT: env["NUM_REGION_CHOSED_TO_FIGHT"]
+NUM_VICTORY_IN_BATTLE: env["NUM_VICTORY_IN_BATTLE"]
 
 regions = ['abruzzo', 'basilicata', 'calabria', 'campania', 'emilia romagna', 'friuli venezia giulia',
 'lazio', 'liguria', 'lombardia', 'marche', 'molise', 'piemonte', 'puglia','sardegna', 'sicilia',
@@ -14,9 +18,9 @@ class Bot(commands.Bot):
 
     def __init__(self):
         # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
-        self.dbase = DBManager('db.db')
-        self.svgmanager = SVGManager('italy.svg')
-        super().__init__(token='l29xecwpmgwjt054so6va66mh6oboa', prefix='!', initial_channels=['lucaoflaif'])
+        self.dbase = DBManager(env)
+        self.svgmanager = SVGManager(env)
+        super().__init__(token=env["TWITCH_TOKEN"], prefix=env["TWITCH_BOT_PREFIX"], initial_channels=[env["TWITCH_BOT_INITIAL_CHANNELS"]])
 
     #overwriting the original run function to make sure the dbase is closed right before event loop is killed
     def run(self):
@@ -110,39 +114,16 @@ class Bot(commands.Bot):
         # Send a hello back!
         await ctx.send(f'Hello {ctx.author.name}!')
 
-
-bot = Bot()
-bot.loop.run_until_complete(bot.dbase.dbase_init())
-#make sure the database is empty before we start
-#bot.loop.run_until_complete(bot.dbase.reset_dbase())
-
-#get current database state
-data_rows = bot.loop.run_until_complete(bot.dbase.get_all_region_data())
-#sync the svg with the database
-bot.svgmanager.initsvg(data_rows=data_rows)
-#save the new updated svg
-bot.loop.run_until_complete(bot.svgmanager.updatesvg())
-bot.run()
-
-
-'''if __name__ == '__main__':
+if __name__ == '__main__':
     bot = Bot()
     bot.loop.run_until_complete(bot.dbase.dbase_init())
-    bot.loop.run_until_complete(bot.dbase.reset_dbase())
+    #make sure the database is empty before we start
+    #bot.loop.run_until_complete(bot.dbase.reset_dbase())
+
+    #get current database state
+    data_rows = bot.loop.run_until_complete(bot.dbase.get_all_region_data())
+    #sync the svg with the database
+    bot.svgmanager.initsvg(data_rows=data_rows)
+    #save the new updated svg
     bot.loop.run_until_complete(bot.svgmanager.updatesvg())
-    
-    class Message:
-        def __init__(self):
-            self.content = random.choice(regions)
-            self.echo = False
-            self.tags = []
-            self.channel = ['lucaoflaif']
-            self.author = 'lucaoflaif'
-
-    for _ in range(50):
-        message = Message()
-        bot.loop.create_task(bot.event_message(message))
-
-        del(message)
-    
-    bot.run()'''
+    bot.run()

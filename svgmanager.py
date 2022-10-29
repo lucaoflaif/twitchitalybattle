@@ -7,13 +7,10 @@ import utils
 
 import aiofiles
 
-
-
-svg_file = 'italy.svg'
-
 class SVGManager():
-    def __init__(self, image_path):
-        self.doc = minidom.parse(image_path)
+    def __init__(self, env):
+        self.env = env
+        self.doc = minidom.parse(env["DEFAULT_SVG_FILE_NAME"])
         self.updating_allowed = True
 
     def get_path_by_title(self, title):
@@ -54,7 +51,7 @@ class SVGManager():
 
     async def updatesvg(self):
         if self.updating_allowed:
-            async with aiofiles.open('italyy.svg', 'w') as f:
+            async with aiofiles.open(self.env["UPDATE_SVG_FILE_NAME"], 'w') as f:
                 await f.write(self.doc.toxml())
 
     def initsvg(self, data_rows):
@@ -71,6 +68,8 @@ class SVGManager():
     def stop_updating(self):
         self.updating_allowed = False
 
+'''
+debug stuff
 if __name__ == '__main__':
     m = SVGManager('italy.svg')
     for text in m.doc.getElementsByTagName('text'):
@@ -85,3 +84,4 @@ def initsvg(self, data_rows):
                 self.set_points_to_region(points, region_name)
 
             if (eliminated): self.set_region_as_eliminated(region_name)
+'''
