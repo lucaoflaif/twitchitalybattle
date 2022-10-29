@@ -1,9 +1,11 @@
 from os import environ
+from unittest.mock import patch
 from twitchio.ext import commands
 import aiosqlite
 from db2 import *
 from svgmanager import *
 import dotenv
+import aiohttp
 
 env = dotenv.dotenv_values()
 
@@ -21,6 +23,13 @@ class Bot(commands.Bot):
         self.dbase = DBManager(env)
         self.svgmanager = SVGManager(env)
         super().__init__(token=env["TWITCH_TOKEN"], prefix=env["TWITCH_BOT_PREFIX"], initial_channels=[env["TWITCH_BOT_INITIAL_CHANNELS"]])
+
+    async def send_telegram_log(self,text):
+        link = 'https://api.telegram.org/bot' + env["TELEGRAM_BOT_TOKEN"] + '/sendMessage'
+        params = {'chat_id': env["TELEGRAM_USER_ID_TO_NOTIFY"], 'text': text}
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(link, params=params) as response: pass
 
     #overwriting the original run function to make sure the dbase is closed right before event loop is killed
     def run(self):
@@ -50,6 +59,8 @@ class Bot(commands.Bot):
         # For now we just want to ignore them...
         if message.echo:
             return
+
+        self.loop.create_task(self.send_telegram_log(text='{twitch_user} sent: {message_text}'.format(twitch_user=message.author, message_text=message.content)))
 
         # Do stuff with my received message
         msg = (message.content).lower()
