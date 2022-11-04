@@ -11,6 +11,7 @@ env = dotenv.dotenv_values()
 
 NUM_REGION_CHOSED_TO_FIGHT= int(env["NUM_REGION_CHOSED_TO_FIGHT"])
 NUM_VICTORY_IN_BATTLE= int(env["NUM_VICTORY_IN_BATTLE"])
+MAX_MESSAGES_IN_A_ROW = int(env['MAX_MESSAGES_IN_A_ROW'])
 
 regions = ['abruzzo', 'basilicata', 'calabria', 'campania', 'emilia romagna', 'friuli venezia giulia',
 'lazio', 'liguria', 'lombardia', 'marche', 'molise', 'piemonte', 'puglia','sardegna', 'sicilia',
@@ -23,6 +24,9 @@ class Bot(commands.Bot):
         self.dbase = DBManager(env)
         self.svgmanager = SVGManager(env)
         super().__init__(token=env["TWITCH_TOKEN"], prefix=env["TWITCH_BOT_PREFIX"], initial_channels=[env["TWITCH_BOT_INITIAL_CHANNELS"]])
+
+        self.last_message_author = None
+        self.author_messages_counter = 0
 
     async def send_telegram_log(self,text):
         link = 'https://api.telegram.org/bot' + env["TELEGRAM_BOT_TOKEN"] + '/sendMessage'
@@ -63,14 +67,26 @@ class Bot(commands.Bot):
         if message.echo:
             return
 
-        self.loop.create_task(self.send_telegram_log(text='{twitch_user} sent: {message_text}'.format(twitch_user=message.author.name, message_text=message.content)))
+        self.loop.create_task(self.send_telegram_log(text='{twitch_user} sent: {message_text} -> {msgs_in_row}'.format(twitch_user=message.author.name, 
+                                                                                                                        message_text=message.content,
+                                                                                                                        msgs_in_row=self.author_messages_counter)))
 
         # Do stuff with my received message
         msg = (message.content).lower()
         if msg in regions:
             region_name = msg
+            
+            #an user is allowed to send max MAX_MESSAGES_IN_A_ROW messages in a row
+            if self.author_messages_counter == MAX_MESSAGES_IN_A_ROW: return
+            if self.last_message_author == message.author.name: 
+                self.author_messages_counter += 1
+            else:
+                self.author_messages_counter = 0
+                self.last_message_author = message.author.name
         else:
             return
+
+        
 
         if (await self.dbase.is_the_region_eliminated(region_name)): return
 
