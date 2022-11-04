@@ -77,12 +77,12 @@ class Bot(commands.Bot):
             region_name = msg
             
             #an user is allowed to send max MAX_MESSAGES_IN_A_ROW messages in a row
-            if self.author_messages_counter == MAX_MESSAGES_IN_A_ROW: return
             if self.last_message_author == message.author.name: 
                 self.author_messages_counter += 1
             else:
                 self.author_messages_counter = 0
                 self.last_message_author = message.author.name
+            if self.author_messages_counter == MAX_MESSAGES_IN_A_ROW: return
         else:
             return
 
